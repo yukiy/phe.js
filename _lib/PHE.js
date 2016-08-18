@@ -21,13 +21,14 @@ var canvas;
 var path;
 var projection;
 
-var countryList = new CountryList();
+var countryList;
 
 var pheBasemap;
 var pheGraticule;
 var pheBorders;
 var pheCountries = [];
 var pheLines = [];
+var pheCenter = [0,0];
 
 
 
@@ -167,6 +168,16 @@ function drawCountry(countryCode, o){
 	if(!o.fillColor) 		o.fillColor = "#FFF";
 	if(!o.fillOpacity) 		o.fillOpacity = "1.0";
 
+	if(!o.filter){
+		o.filter = "";
+	} else{
+		o.filter = "url(#"+o.filter+")";
+	}
+
+	if(o.fillImageId){
+		o.fillColor = "url(#"+o.fillImageId+")";
+	}
+
 	var world = worldJson;
 	var countries = world.objects.countries;
 	for(var i=0; i<countries.geometries.length; i++){
@@ -186,7 +197,11 @@ function drawCountry(countryCode, o){
 				.attr("stroke-opacity", o.strokeOpacity)
 				.attr("fill", o.fillColor)
 				.attr("fill-opacity", o.fillOpacity)
+				.attr("filter", o.filter)
+//				.attr("fill", o.fillImageId)
 				.attr("d", path);
+
+
 
 			pheCountries.push({svg: countrySVG, countryCode: countryCode});
 		} 
@@ -246,25 +261,27 @@ function drawBorders(o){
 ** 
 */
 function updateBorders(o){
-	if(o){
-		if(o.strokeColor) 		pheBorders.attr("stroke", o.strokeColor);
-		if(o.strokeWidth) 		pheBorders.attr("stroke-width", o.strokeWidth);
-		if(o.strokeDasharray)	pheBorders.attr("stroke-dasharray", o.strokeDasharray);
-		if(o.strokeDashoffset)	pheBorders.attr("stroke-dashoffset", o.strokeDashoffset);
-		if(o.strokeLinecap) 	pheBorders.attr("stroke-linecap", o.strokeLinecap);
-		if(o.strokeLinejoin)	pheBorders.attr("stroke-linejoin", o.strokeLinejoin);
-		if(o.strokeOpacity)		pheBorders.attr("stroke-opacity", o.strokeOpacity);		
-	}
-	pheBorders.attr("d", path);
+	if(pheBorders){
+		if(o){
+			if(o.strokeColor) 		pheBorders.attr("stroke", o.strokeColor);
+			if(o.strokeWidth) 		pheBorders.attr("stroke-width", o.strokeWidth);
+			if(o.strokeDasharray)	pheBorders.attr("stroke-dasharray", o.strokeDasharray);
+			if(o.strokeDashoffset)	pheBorders.attr("stroke-dashoffset", o.strokeDashoffset);
+			if(o.strokeLinecap) 	pheBorders.attr("stroke-linecap", o.strokeLinecap);
+			if(o.strokeLinejoin)	pheBorders.attr("stroke-linejoin", o.strokeLinejoin);
+			if(o.strokeOpacity)		pheBorders.attr("stroke-opacity", o.strokeOpacity);		
+		}
+		pheBorders.attr("d", path);
 
-	return pheBorders;
+		return pheBorders;		
+	}
 }
 
 
 
 /*---
-** Graticule = 緯度経度線
-** options{strokeWidth:, color;, opacity: }
+* Graticule = 緯度経度線
+* options{strokeWidth:, color;, opacity: }
 */
 function drawGraticule(o){
 
@@ -300,32 +317,39 @@ function drawGraticule(o){
 ** 
 */
 function updateGraticule(o){
-	if(o){
-		if(o.strokeColor) 		pheGraticule.attr("stroke", o.strokeColor);
-		if(o.strokeWidth) 		pheGraticule.attr("stroke-width", o.strokeWidth);
-		if(o.strokeDasharray)	pheGraticule.attr("stroke-dasharray", o.strokeDasharray);
-		if(o.strokeDashoffset)	pheGraticule.attr("stroke-dashoffset", o.strokeDashoffset);
-		if(o.strokeLinecap) 	pheGraticule.attr("stroke-linecap", o.strokeLinecap);
-		if(o.strokeLinejoin)	pheGraticule.attr("stroke-linejoin", o.strokeLinejoin);
-		if(o.strokeOpacity)		pheGraticule.attr("stroke-opacity", o.strokeOpacity);		
-	}
-	pheGraticule.attr("d", path);
+	if(pheGraticule){
+		if(o){
+			if(o.strokeColor) 		pheGraticule.attr("stroke", o.strokeColor);
+			if(o.strokeWidth) 		pheGraticule.attr("stroke-width", o.strokeWidth);
+			if(o.strokeDasharray)	pheGraticule.attr("stroke-dasharray", o.strokeDasharray);
+			if(o.strokeDashoffset)	pheGraticule.attr("stroke-dashoffset", o.strokeDashoffset);
+			if(o.strokeLinecap) 	pheGraticule.attr("stroke-linecap", o.strokeLinecap);
+			if(o.strokeLinejoin)	pheGraticule.attr("stroke-linejoin", o.strokeLinejoin);
+			if(o.strokeOpacity)		pheGraticule.attr("stroke-opacity", o.strokeOpacity);		
+		}
+		pheGraticule.attr("d", path);
 
-	return pheGraticule;
+		return pheGraticule;		
+	}
 }
 
 
 /*---
 **
 */
-function drawText(str, arrayLngLat, o){
+function drawText(str, lngLat, o){
 	if(!o) o = {};
+	if(!o.fontSize) 	o.fontSize = "10px";
 	if(!o.strokeWidth) 	o.strokeWidth = "0.5";
 	if(!o.strokeColor) 	o.strokeColor = "#FFF";
 	if(!o.fillColor) 	o.fillColor = "#000";
 	if(!o.opacity) 		o.opacity = "1.0";
 	if(!o.id)			o.id = "";
 
+
+	var position = lngLat2XY(lngLat);
+	var x = position[0];
+	var y = position[1] + (parseInt(o.fontSize)/2);
 
 	svg.append("text")
 		.attr("class", "texts")
@@ -334,10 +358,11 @@ function drawText(str, arrayLngLat, o){
 		.attr("stroke", o.strokeColor)
 		.attr("fill", o.fillColor)
 		.attr("opacity", o.opacity)
-	    .attr("transform", function(d) { return "translate(" + lngLat2XY(arrayLngLat) + ")"; })
-		.attr("font-size", o.fontsize)
-	    .attr("dy", o.fontsize)
+	    .attr("transform", function(d) { return "translate(" + [x,y] + ")"; })
+		.attr("font-size", o.fontSize)
+		.attr("text-anchor", "middle")
 		.text(str);
+
 }
 
 
@@ -362,8 +387,10 @@ function drawLine(lngLatArray, o){
 	// 	.enter()
 	// 	.append("path")
 
+	console.log(o.strokeDasharray);
 	var line = svg.append("path")
 		.data([pointData])
+//		.datum(pointData)
 		.attr("class", "line")
 		.attr("stroke-width", o.strokeWidth)
 		.attr("stroke", o.strokeColor)
@@ -374,7 +401,6 @@ function drawLine(lngLatArray, o){
 		.attr("stroke-opacity", o.strokeOpacity)
 		.attr("fill", "none")
 		.attr("d", path);
-
 
 	pheLines.push(line);
 }
@@ -403,36 +429,32 @@ function selectById(elId){
 */
 
 
-/*---
-**
-*/
 function XY2LngLat(arrayXY){
 	return projection.invert(arrayXY);
 }
 
-/*---
-**
-*/
-function lngLat2XY(arrayLngLat){
-	return projection(arrayLngLat);
+
+function lngLat2XY(lngLat){
+	return projection(lngLat);
 }
 
-/*---
-**
-*/
-function invertCoord(arrayLngLat){
-	return [ -arrayLngLat[0], -arrayLngLat[1] ];
+function invertCoord(lngLat){
+	return [ -lngLat[0], -lngLat[1] ];
 }
 
 
-
-function setCenter(arrayLngLat){
-	projection.rotate(invertCoord(arrayLngLat));
+function setCenter(lngLat){
+	pheCenter = lngLat;
+	projection.rotate(invertCoord(lngLat));
 }
 
+function getCenter(){
+	return 	pheCenter;
+}
 
-function updateCenter(arrayLngLat){
-	projection.rotate(invertCoord(arrayLngLat));
+function updateCenter(lngLat){
+	pheCenter = lngLat;
+	projection.rotate(invertCoord(lngLat));
 	updateBaseMap();
 	updateBorders();
 	updateGraticule();
@@ -441,7 +463,57 @@ function updateCenter(arrayLngLat){
 }
 
 
+function rotateMap(yaw, pitch){
 
+	// if(!yaw) yaw = 0;
+	// if(!pitch) pitch = 0;
+	// if(!roll) roll = 0;
+	var curCenter = getCenter();
+	updateCenter([curCenter[0]+yaw, curCenter[1]+pitch]);
+	updateBaseMap();
+	updateBorders();
+	updateGraticule();
+	updateCountries();
+	updateLines();
+}
+
+
+function rotateTo(startLngLat, distLngLat, frame, speed, callback, isExport, exportOptions){
+
+	var num = 0;
+
+	var lngUnit = ( distLngLat[0] - startLngLat[0] ) / frame;
+	var latUnit = ( distLngLat[1] - startLngLat[1] ) / frame;
+
+	var o = {};
+	if (exportOptions) o = exportOptions;
+	if(!o.prefix) o.prefix = "";
+	if(!o.startNum) o.startNum = 0;
+
+	function move(num){				
+		if(num < frame){
+
+			rotateMap(lngUnit, latUnit);
+
+			if(isExport){
+				var fileNum = o.startNum + num;
+				phe.saveImage(o.prefix+fileNum);	
+			} 
+
+			setTimeout(function(){
+				num++;
+				move(num);
+			}, speed);
+
+		}else{
+
+			callback();
+
+		}
+	}
+	
+	move(num);
+}
 
 /*----------------------------------------------------------------------------------
 **-----DATA UTILITIES--------------------------------------------------------------------
@@ -494,7 +566,13 @@ var readData = function(filename, callback){
 /*---
 **
 */
-var getDataRange = function(data, dataName){
+var getDataRange = function(data, dataName, arrayStart){
+
+	if(arrayStart > 0){
+		for(var i=0; i<arrayStart; i++){
+			data.shift()
+		}
+	}
 
 	var minVal = d3.min(data, function(e){
 		if(e[dataName] == "") return undefined;
@@ -512,28 +590,22 @@ var getDataRange = function(data, dataName){
 
 
 /*---
-**
+**UTILITY THIS IS NOT LATEST
 */
-function mergeData(){
+function mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray){
 
-	var  addValueFromAnotherList = function(){
-		//---in this case add .capital from list1 to list2;
-		var list1 = countryList.data.list;
-		var list2 = countryList.data2.list;
-		var list3 = {list:[]}
+	var  addValueFromAnotherList = function(data1, data2, commonkey1, commonkey2, newkeyArray){
 
-		for(var i=0; i<list2.length; i++){
-
-			var num = list2[i].ISO31661_numeric;
-			for(var j=0; j<list1.length; j++){
-
-				if( num == list1[j].ISO31661_numeric){
-					var capital = list1[j].capital;
-					list2[i].capital = capital;
+		for(var i=0; i<data1.length; i++){
+			for(var j=0; j<data2.length; j++){
+				if( data1[i][commonkey1].toLowerCase() == data2[j][commonkey2].toLowerCase()){
+					for(var n=0; n<newkeyArray.length; n++){
+						data1[i][newkeyArray[n]] = data2[j][newkeyArray[n]];
+					}
 				}
 			}
 		}	
-		return list2;
+		return data1;
 	}
 
 
@@ -549,12 +621,57 @@ function mergeData(){
 	    return header + body;
 	}
 
+	var data1, data2;
 
-	var json = addValueFromAnotherList();
-	var str = json2csv(json);
-	d3.select('body').append('<pre>'+str+'</pre>');
+	d3.csv(datafolder + filename1, function(data){
+		data1 = data;
+		console.log(data1);
+		d3.csv(datafolder + filename2, function(data){
+			data2 = data;
+			var json = addValueFromAnotherList(data1, data2, commonkey1, commonkey2, newkeyArray);
+			var str = json2csv(json);
+			document.write('<pre>'+str+'</pre>');
+			return str;
+		});
+	});
+
+
 }
 
+
+/*----------------------------------------------------------------------------------
+**-----SVG FILTERS (EXPERIMENTAL)--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+function addFilter(){
+	var defs = svg.append("defs");
+
+	var blurFilter = defs.append("filter")
+		.attr("id", "blur")
+		.attr("x", "0")
+		.attr("y", "0")
+
+	blurFilter.append("feGaussianBlur")
+		.attr("in", "SourceGraphic")
+		.attr("stdDeviation", "3");
+}
+
+function setFillImage(id, filename, width, height){
+	var defs = svg.append("svg:defs");
+
+	var pattern = defs.append("pattern")
+		.attr("id", id)
+		.attr("width", width)
+		.attr("height", height)
+		.attr("patternUnits", "userSpaceOnUse");
+
+	pattern.append("image")
+		.attr("xlink:href", filename)
+		.attr("width", width)
+		.attr("height", height)
+		.attr("x", "0")
+		.attr("y", "0");
+}
 
 
 
@@ -564,12 +681,34 @@ function mergeData(){
 **----------------------------------------------------------------------------------
 */
 
+var mouseMove = function(){};
+var mouseDown = function(){};
+var mouseClick = function(){};
+
+
 var PHE = function(){
+	this.scriptFiles = [
+		"../_lib/canvg/rgbcolor.js",
+		"../_lib/canvg/StackBlur.js",
+		"../_lib/canvg/canvg.js",
+		"../_lib/FileSaver.min.js",
+		"../_lib/canvas-toBlob.js",
+		"../_lib/d3.v3.min.js",
+		"../_lib/topojson.v1.min.js",
+		"../_lib/CountryList.js"
+	]
 }
 
 var phe = new PHE();
 
 PHE.prototype.run = function(){
+
+	document.body.innerHTML += "<div id='svgArea'></div>";
+	document.body.innerHTML += "<div id='canvasArea'></div>";
+	document.body.innerHTML += "<div id='footer'></div>";
+
+
+	countryList = new CountryList();
 
 	this.createSVGArea();
 	this.createCanvasArea();
@@ -585,13 +724,18 @@ PHE.prototype.run = function(){
 
 	path = d3.geo.path().projection(projection);
 
-	d3.json(datafolder+"world-110m.json", function(error, world) {
+	d3.json(datafolder+"./phe/world-110m.json", function(error, world) {
 		if (error) throw error;
 		worldJson = world;
-		countryList.loadList("countries.csv",function(){
-			pictureHappinessOnEarth();
+		countryList.loadList("./phe/countries.csv?"+new Date(),function(){
+			countryList.loadList("./phe/countries.csv?"+new Date(),function(){
+				pictureHappinessOnEarth();
+			});
 		});
 	})
+
+
+	addFilter();//experimental
 
 	//---What's this? -> http://stackoverflow.com/questions/22448032/d3-what-is-the-self-as-in-d3-selectself-frameelement-styleheight-height
 	d3.select(self.frameElement).style("height", svgH + "px");
@@ -712,7 +856,15 @@ PHE.prototype.saveImage = function(filename){
 }
 
 
-$(function(){
-	phe.run();
-})
+/*----------------------------------------------------------------------------------
+**-------------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+for(var i=0; i<phe.scriptFiles.length; i++){
+	document.write("<script src='"+phe.scriptFiles[i]+"'></script>");
+}
+
+window.onload = function(){
+	phe.run();	
+}
 

@@ -1,0 +1,250 @@
+ISO31661_name,ISO31661_alpha2,ISO31661_alpha3,ISO31661_numeric,DATA
+Afghanistan,af,afg,4,4549
+ÁEand Islands,ax,ala,248,
+Albania,al,alb,8,1233.5
+Algeria,dz,dza,12,2025
+American Samoa,as,asm,16,
+Andorra,ad,and,20,
+Angola,ao,ago,24,24160.5
+Anguilla,ai,aia,660,
+Antarctica,aq,ata,10,
+Antigua and Barbuda,ag,atg,28,
+Argentina,ar,arg,32,79000
+Armenia,am,arm,51,1200
+Aruba,aw,abw,533,
+Australia,au,aus,36,17000
+Austria,at,aut,40,7400
+Azerbaijan,az,aze,31,555
+Bahamas,bs,bhs,44,
+Bahrain,bh,bhr,48,
+Bangladesh,bd,bgd,50,
+Barbados,bb,brb,52,
+Belarus,by,blr,112,2478
+Belgium,be,bel,56,1550
+Belize,bz,blz,84,50
+Benin,bj,ben,204,
+Bermuda,bm,bmu,60,
+Bhutan,bt,btn,64,
+"Bolivia, Plurinational State of",bo,bol,68,745
+"Bonaire, Saint Eustatius and Saba",bq,bes,535,
+Bosnia and Herzegovina,ba,bih,70,1118
+Botswana,bw,bwa,72,
+Bouvet Island,bv,bvt,74,
+Brazil,br,bra,76,27008.5
+British Indian Ocean Territory,io,iot,86,
+Brunei Darussalam,bn,brn,96,
+Bulgaria,bg,bgr,100,6950
+Burkina Faso,bf,bfa,854,
+Burundi,bi,bdi,108,159
+Cambodia,kh,khm,116,
+Cameroon,cm,cmr,120,3159.5
+Canada,ca,can,124,35837
+Cape Verde,cv,cpv,132,
+Cayman Islands,ky,cym,136,10
+Central African Republic,cf,caf,140,15358.5
+Chad,td,tcd,148,1191.5
+Chile,cl,chl,152,11120
+China,cn,chn,156,276693
+Christmas Island,cx,cxr,162,
+Cocos (Keeling) Islands,cc,cck,166,
+Colombia,co,col,170,1618
+Comoros,km,com,174,
+Congo,cg,cog,178,
+"Congo, The Democratic Republic of the",cd,cod,180,
+Cook Islands,ck,cok,184,1
+Costa Rica,cr,cri,188,1284
+Côte d'Ivoire,ci,civ,384,400
+Croatia,hr,hrv,191,1838
+Cuba,cu,cub,192,6386.5
+Curaçao,cw,cuw,531,
+Cyprus,cy,cyp,196,891
+Czech Republic,cz,cze,203,6093
+Denmark,dk,dnk,208,
+Djibouti,dj,dji,262,
+Dominica,dm,dma,212,
+Dominican Republic,do,dom,214,2396.5
+Ecuador,ec,ecu,218,825
+Egypt,eg,egy,818,8562
+El Salvador,sv,slv,222,1660
+Equatorial Guinea,gq,gnq,226,
+Eritrea,er,eri,232,
+Estonia,ee,est,233,653
+Ethiopia,et,eth,231,38700
+Falkland Islands (Malvinas),fk,flk,238,
+Faroe Islands,fo,fro,234,
+Fiji,fj,fji,242,103.5
+Finland,fi,fin,246,1700
+France,fr,fra,250,15600
+French Guiana,gf,guf,254,
+French Polynesia,pf,pyf,258,45
+French Southern Territories,tf,atf,260,
+Gabon,ga,gab,266,
+Gambia,gm,gmb,270,
+Georgia,ge,geo,268,1946.5
+Germany,de,deu,276,19155.5
+Ghana,gh,gha,288,
+Gibraltar,gi,gib,292,
+Greece,gr,grc,300,15700
+Greenland,gl,grl,304,
+Grenada,gd,grd,308,
+Guadeloupe,gp,glp,312,142
+Guam,gu,gum,316,12.5
+Guatemala,gt,gtm,320,2250
+Guernsey,gg,ggy,831,
+Guinea,gn,gin,324,655
+Guinea-Bissau,gw,gnb,624,126
+Guyana,gy,guy,328,84
+Haiti,ht,hti,332,840
+Heard Island and McDonald Islands,hm,hmd,334,
+Holy See (Vatican City State),va,vat,336,
+Honduras,hn,hnd,340,119.5
+Hong Kong,hk,hkg,344,
+Hungary,hu,hun,348,18100
+Iceland,is,isl,352,
+India,in,ind,356,52000
+Indonesia,id,idn,360,
+"Iran, Islamic Republic of",ir,irn,364,21573.5
+Iraq,iq,irq,368,72.5
+Ireland,ie,irl,372,198.5
+Isle of Man,im,imn,833,
+Israel,il,isr,376,3285.5
+Italy,it,ita,380,7500
+Jamaica,jm,jam,388,801
+Japan,jp,jpn,392,3496
+Jersey,je,jey,832,
+Jordan,jo,jor,400,157.5
+Kazakhstan,kz,kaz,398,999
+Kenya,ke,ken,404,24542
+Kiribati,ki,kir,296,
+"Korea, Democratic People's Republic of",kp,prk,408,
+"Korea, Republic of",kr,kor,410,19000
+Kuwait,kw,kwt,414,
+Kyrgyzstan,kg,kgz,417,1503.5
+Lao People's Democratic Republic,la,lao,418,
+Latvia,lv,lva,428,656
+Lebanon,lb,lbn,422,833.5
+Lesotho,ls,lso,426,
+Liberia,lr,lbr,430,
+Libya,ly,lby,434,802.5
+Liechtenstein,li,lie,438,
+Lithuania,lt,ltu,440,1206
+Luxembourg,lu,lux,442,126
+Macao,mo,mac,446,
+"Macedonia, the former Yugoslav Republic of",mk,mkd,807,939
+Madagascar,mg,mdg,450,3950
+Malawi,mw,mwi,454,
+Malaysia,my,mys,458,
+Maldives,mv,mdv,462,
+Mali,ml,mli,466,240.5
+Malta,mt,mlt,470,
+Marshall Islands,mh,mhl,584,
+Martinique,mq,mtq,474,
+Mauritania,mr,mrt,478,
+Mauritius,mu,mus,480,
+Mayotte,yt,myt,175,
+Mexico,mx,mex,484,57967.5
+"Micronesia, Federated States of",fm,fsm,583,
+"Moldova, Republic of",md,mda,498,2227.5
+Monaco,mc,mco,492,
+Mongolia,mn,mng,496,9.5
+Montenegro,me,mne,499,3275.5
+Montserrat,ms,msr,500,
+Morocco,ma,mar,504,2700
+Mozambique,mz,moz,508,415
+Myanmar,mm,mmr,104,268.5
+Namibia,na,nam,516,
+Nauru,nr,nru,520,
+Nepal,np,npl,524,
+Netherlands,nl,nld,528,
+New Caledonia,nc,ncl,540,56.5
+New Zealand,nz,nzl,554,8467
+Nicaragua,ni,nic,558,387.5
+Niger,ne,ner,562,
+Nigeria,ng,nga,566,
+Niue,nu,niu,570,10.5
+Norfolk Island,nf,nfk,574,
+Northern Mariana Islands,mp,mnp,580,
+Norway,no,nor,578,1700
+Oman,om,omn,512,
+Pakistan,pk,pak,586,1750
+Palau,pw,plw,585,
+"Palestinian Territory, Occupied",ps,pse,275,384.5
+Panama,pa,pan,591,
+Papua New Guinea,pg,png,598,150
+Paraguay,py,pry,600,1750.5
+Peru,pe,per,604,800
+Philippines,ph,phl,608,
+Pitcairn,pn,pcn,612,
+Poland,pl,pol,616,10632
+Portugal,pt,prt,620,7585.5
+Puerto Rico,pr,pri,630,33
+Qatar,qa,qat,634,
+Réunion,re,reu,638,105
+Romania,ro,rou,642,15421.5
+Russian Federation,ru,rus,643,48724
+Rwanda,rw,rwa,646,34.5
+Saint Barthélemy,bl,blm,652,
+"Saint Helena, Ascension and Tristan da Cunha",sh,shn,654,
+Saint Kitts and Nevis,kn,kna,659,
+Saint Lucia,lc,lca,662,
+Saint Martin (French part),mf,maf,663,
+Saint Pierre and Miquelon,pm,spm,666,
+Saint Vincent and the Grenadines,vc,vct,670,
+Samoa,ws,wsm,882,251
+San Marino,sm,smr,674,
+Sao Tome and Principe,st,stp,678,
+Saudi Arabia,sa,sau,682,168.5
+Senegal,sn,sen,686,458.5
+Serbia,rs,srb,688,3275.5
+Seychelles,sc,syc,690,
+Sierra Leone,sl,sle,694,495
+Singapore,sg,sgp,702,
+Sint Maarten (Dutch part),sx,sxm,534,
+Slovakia,sk,svk,703,3146.5
+Slovenia,si,svn,705,2150
+Solomon Islands,sb,slb,90,
+Somalia,so,som,706,
+South Africa,za,zaf,710,967.5
+South Georgia and the South Sandwich Islands,gs,sgs,239,
+South Sudan,ss,ssd,728,
+Spain,es,esp,724,35500.5
+Sri Lanka,lk,lka,144,
+Sudan,sd,sdn,736,715
+Suriname,sr,sur,740,75
+Svalbard and Jan Mayen,sj,sjm,744,
+Swaziland,sz,swz,748,3426
+Sweden,se,swe,752,3350
+Switzerland,ch,che,756,
+Syrian Arab Republic,sy,syr,760,1985
+"Taiwan, Province of China",tw,twn,158,4582.5
+Tajikistan,tj,tjk,762,385
+"Tanzania, United Republic of",tz,tza,834,26750
+Thailand,th,tha,764,3700
+Timor-Leste,tl,tls,626,595.5
+Togo,tg,tgo,768,
+Tokelau,tk,tkl,772,
+Tonga,to,ton,776,9.5
+Trinidad and Tobago,tt,tto,780,42.5
+Tunisia,tn,tun,788,2654
+Turkey,tr,tur,792,72047.5
+Turkmenistan,tm,tkm,795,3500
+Turks and Caicos Islands,tc,tca,796,
+Tuvalu,tv,tuv,798,5.5
+Uganda,ug,uga,800,374.5
+Ukraine,ua,ukr,804,52347
+United Arab Emirates,ae,are,784,
+United Kingdom,gb,gbr,826,6000
+United States,us,usa,840,80160.5
+United States Minor Outlying Islands,um,umi,581,
+Uruguay,uy,ury,858,10056
+Uzbekistan,uz,uzb,860,2407
+Vanuatu,vu,vut,548,
+"Venezuela, Bolivarian Republic of",ve,ven,862,125.5
+Viet Nam,vn,vnm,704,12079.5
+"Virgin Islands, British",vg,vgb,92,
+"Virgin Islands, U.S.",vi,vir,850,
+Wallis and Futuna,wf,wlf,876,8.5
+Western Sahara,eh,esh,732,
+Yemen,ye,yem,887,715
+Zambia,zm,zmb,894,425
+Zimbabwe,zw,zwe,716,
