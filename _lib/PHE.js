@@ -387,7 +387,6 @@ function drawLine(lngLatArray, o){
 	// 	.enter()
 	// 	.append("path")
 
-	console.log(o.strokeDasharray);
 	var line = svg.append("path")
 		.data([pointData])
 //		.datum(pointData)
@@ -681,9 +680,9 @@ function setFillImage(id, filename, width, height){
 **----------------------------------------------------------------------------------
 */
 
-var mouseMove = function(){};
-var mouseDown = function(){};
-var mouseClick = function(){};
+// var mouseMove = function(){};
+// var mouseDown = function(){};
+// var mouseClick = function(){};
 
 
 var PHE = function(){

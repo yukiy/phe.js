@@ -33,29 +33,3 @@ function pictureHappinessOnEarth(){
 
 }
 
-
-
-
-
-//----interaction------------------------------------------------------------------
-
-function mouseClick(position){
-	console.log(position);
-}
-
-function mouseDown(position){
-}
-
-function mouseMove(position){
-}
-
-function setEvents(){
-
-	$("#exportBtn").click(function(){
-		createDownloadLink();
-	});
-}
-
-
-
-

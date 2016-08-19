@@ -62,11 +62,3 @@ function pictureHappinessOnEarth(){
 	});
 }
 
-function mouseClick(position){
-}
-
-function mouseDown(position){
-}
-
-function mouseMove(position){
-}

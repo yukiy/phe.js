@@ -14,14 +14,13 @@ function pictureHappinessOnEarth(){
 	drawBorders();
 
 	var textStyleOptions = {
-		strokeWidth : "0.5",
-		strokeColor : "#FFF",
+		strokeWidth : "none",
 		fillColor : "#000",
-		opacity : "1.0",
-		fontsize : "30px",
+		fontSize : "25px",
 		id : "title"
 	}
-//	drawText("Electric Energy Consumption", [-180, 0], textStyleOptions);
+
+	drawText("Electric Energy Consumption", [-110, 0], textStyleOptions);
 
 	readData("energy.csv", function(data){
 				
@@ -83,42 +82,11 @@ function pictureHappinessOnEarth(){
 		}
 
 
-
-
 		var year = 2011;
 		visualize2(year);
-
-		// setInterval(function(){
-		// 	console.log(year);
-		// 	visualize2(year);
-		// 	year++;
-		// 	if(year > 2011){
-		// 		year = 1961;
-		// 		drawBaseMap();
-		// 	}
-		// }, 5000000);
 
 	});
 
 }
-
-
-
-
-
-//----interaction------------------------------------------------------------------
-
-function mouseClick(position){
-	console.log(position);
-}
-
-function mouseDown(position){
-}
-
-function mouseMove(position){
-}
-
-
-
 
 
