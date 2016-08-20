@@ -90,3 +90,18 @@ function pictureHappinessOnEarth(){
 }
 
 
+/*----------------------------------------------------------*/
+
+function mouseMove(positions){
+
+}
+
+function mouseClick(positions){
+
+}
+
+function mouseDown(positions){
+
+}
+
+
