@@ -6,7 +6,7 @@ function pictureHappinessOnEarth(){
 	var csvfilename = "energy.csv";
 
 	var dataCell = "2001";
-	var countryCell = "Country Code"
+	var countryCell = "Country Code";
 
 	readData(csvfilename,function(data){
 		var dataRange = getDataRange(data, dataCell);
