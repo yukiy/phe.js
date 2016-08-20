@@ -1,10 +1,9 @@
 function pictureHappinessOnEarth(){
-	setCenter([pheCoords.shizuoka[0], 0]);
+
 	makeOceanColor("black");
 	drawBaseMap({fillColor: "white"});
 
 	var csvfilename = "energy.csv";
-
 	var dataCell = "2001";
 	var countryCell = "Country Code";
 
