@@ -95,7 +95,7 @@ var makeOceanColor = function(color){
 
 
 /*---
-** 
+**
 */
 function drawBaseMap(o){
 
@@ -130,7 +130,7 @@ function drawBaseMap(o){
 }
 
 /*---
-** 
+**
 */
 function updateBaseMap(o){
 	if(o){
@@ -142,7 +142,7 @@ function updateBaseMap(o){
 		if(o.strokeLinejoin)	pheBasemap.attr("stroke-linejoin", o.strokeLinejoin)
 		if(o.strokeOpacity)		pheBasemap.attr("stroke-opacity", o.strokeOpacity)
 		if(o.fillColor) 		pheBasemap.attr("fill", o.fillColor)
-		if(o.fillOpacity) 		pheBasemap.attr("fill-opacity", o.fillOpacity)		
+		if(o.fillOpacity) 		pheBasemap.attr("fill-opacity", o.fillOpacity)
 	}
 	pheBasemap.attr("d", path);
 
@@ -204,7 +204,7 @@ function drawCountry(countryCode, o){
 
 
 			pheCountries.push({svg: countrySVG, countryCode: countryCode});
-		} 
+		}
 	}
 }
 
@@ -224,7 +224,7 @@ function updateCountries(){
 
 
 /*---
-** 
+**
 */
 function drawBorders(o){
 
@@ -258,7 +258,7 @@ function drawBorders(o){
 
 
 /*---
-** 
+**
 */
 function updateBorders(o){
 	if(pheBorders){
@@ -269,11 +269,11 @@ function updateBorders(o){
 			if(o.strokeDashoffset)	pheBorders.attr("stroke-dashoffset", o.strokeDashoffset);
 			if(o.strokeLinecap) 	pheBorders.attr("stroke-linecap", o.strokeLinecap);
 			if(o.strokeLinejoin)	pheBorders.attr("stroke-linejoin", o.strokeLinejoin);
-			if(o.strokeOpacity)		pheBorders.attr("stroke-opacity", o.strokeOpacity);		
+			if(o.strokeOpacity)		pheBorders.attr("stroke-opacity", o.strokeOpacity);
 		}
 		pheBorders.attr("d", path);
 
-		return pheBorders;		
+		return pheBorders;
 	}
 }
 
@@ -314,7 +314,7 @@ function drawGraticule(o){
 
 
 /*---
-** 
+**
 */
 function updateGraticule(o){
 	if(pheGraticule){
@@ -325,11 +325,11 @@ function updateGraticule(o){
 			if(o.strokeDashoffset)	pheGraticule.attr("stroke-dashoffset", o.strokeDashoffset);
 			if(o.strokeLinecap) 	pheGraticule.attr("stroke-linecap", o.strokeLinecap);
 			if(o.strokeLinejoin)	pheGraticule.attr("stroke-linejoin", o.strokeLinejoin);
-			if(o.strokeOpacity)		pheGraticule.attr("stroke-opacity", o.strokeOpacity);		
+			if(o.strokeOpacity)		pheGraticule.attr("stroke-opacity", o.strokeOpacity);
 		}
 		pheGraticule.attr("d", path);
 
-		return pheGraticule;		
+		return pheGraticule;
 	}
 }
 
@@ -378,7 +378,7 @@ function drawLine(lngLatArray, o){
 	if(!o.strokeOpacity) 	o.strokeOpacity = "1.0";
 
 	var pointData = {
-		"type": "LineString", 
+		"type": "LineString",
 		"coordinates": lngLatArray
 	}
 
@@ -489,15 +489,15 @@ function rotateTo(startLngLat, distLngLat, frame, speed, callback, isExport, exp
 	if(!o.prefix) o.prefix = "";
 	if(!o.startNum) o.startNum = 0;
 
-	function move(num){				
+	function move(num){
 		if(num < frame){
 
 			rotateMap(lngUnit, latUnit);
 
 			if(isExport){
 				var fileNum = o.startNum + num;
-				phe.saveImage(o.prefix+fileNum);	
-			} 
+				phe.saveImage(o.prefix+fileNum);
+			}
 
 			setTimeout(function(){
 				num++;
@@ -510,7 +510,7 @@ function rotateTo(startLngLat, distLngLat, frame, speed, callback, isExport, exp
 
 		}
 	}
-	
+
 	move(num);
 }
 
@@ -603,7 +603,7 @@ function mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray){
 					}
 				}
 			}
-		}	
+		}
 		return data1;
 	}
 
@@ -724,6 +724,7 @@ PHE.prototype.run = function(){
 	path = d3.geo.path().projection(projection);
 
 	d3.json(datafolder+"./phe/world-110m.json", function(error, world) {
+//	d3.json(datafolder+"./phe/world-50m.json", function(error, world) {
 		if (error) throw error;
 		worldJson = world;
 		countryList.loadList("./phe/countries.csv?"+new Date(),function(){
@@ -833,8 +834,8 @@ PHE.prototype.getImageDownloadLinkTag = function(linkText){
 	//---draw canvas from SVG with canvg()
 	canvg("canvas", svgText, {ignoreDimensions: true, scaleWidth: outputW, scaleHeight: outputH});
 
-	var linkTag = "<a id='link' href='" 
-			+ document.getElementById("canvas").toDataURL() 
+	var linkTag = "<a id='link' href='"
+			+ document.getElementById("canvas").toDataURL()
 			+ "' download='export.png'>"+linkText+"</a>"
 
 	return linkTag;
@@ -864,6 +865,5 @@ for(var i=0; i<phe.scriptFiles.length; i++){
 }
 
 window.onload = function(){
-	phe.run();	
+	phe.run();
 }
-
