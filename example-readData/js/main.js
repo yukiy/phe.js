@@ -1,7 +1,7 @@
 function pictureHappinessOnEarth(){
 
 	makeOceanColor("black");
-	drawBaseMap({fillColor: "white"});
+	drawBaseMap( {fillColor: "grey"} );
 
 	var csvfilename = "energy.csv";
 	var dataCell = "2001";
@@ -12,18 +12,26 @@ function pictureHappinessOnEarth(){
 
 		for(var i=0; i<data.length; i++){
 
-			var countryCode = data[i][countryCell];
+			var country = data[i][countryCell];
+			var countryNum = getISONumber(country);
 
-			var countryNum = countryList.getDataFromISOAlpha3(countryCode).ISO31661_numeric;
-			//var countryNum = countryList.getDataFromISOAlpha2(countryCode).ISO31661_numeric;
-			//var countryNum = countryList.getDataFromName(countryCode).ISO31661_numeric;
+			drawCountry(countryNum, {fillColor : "white"}); //下地
 
 			var score = data[i][dataCell];
+			var option;
+			if(score == ""){
+				option = {
+					fillColor: "grey"
+				}
 
-			var normalizedScore = mapValue(score, dataRange.min, dataRange.max, 0.05, 1);
+			}else{
+				option = {
+					fillColor: "red",
+					fillOpacity :  mapValue(score, dataRange.min, dataRange.max, 0.05, 1)
+				}
+			}
 
-			drawCountry(countryNum, {fillColor: rgba(255, 0, 0, normalizedScore)});
-
+			drawCountry(countryNum, option);
 		}
 	})
 }

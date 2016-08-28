@@ -1,6 +1,6 @@
 /*
 * PHE.js
-* v1.0.0
+* v1.0.2
 * created for Picture Happiness on Earth 2016 at Miraikan, Tokyo
 */
 
@@ -673,6 +673,35 @@ function setFillImage(id, filename, width, height){
 }
 
 
+
+/*----------------------------------------------------------------------------------
+**-----CountryList wrappers--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+
+function getAllCountriesData(){
+	return countryList.data;
+}
+
+function getCountryData(country){
+	return countryList.getData(country);
+}
+
+function getLngLat(country){
+	return countryList.getLngLat(country);
+}
+
+function getISOName(country){
+	return countryList.getISOName(country);
+}
+
+function getISONumber(country){
+	return countryList.getISONumber(country);
+}
+
+function getCapital(country){
+	return countryList.getCapital(country);
+}
 
 
 /*----------------------------------------------------------------------------------

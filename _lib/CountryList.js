@@ -30,7 +30,7 @@ CountryList.prototype.getDataFromISONumeric = function(num){
 		}
 	}
 
-	return "no data found: " + _str;
+	return "no data found: " + num;
 }
 
 CountryList.prototype.getDataFromISOAlpha2 = function(_str){
@@ -129,3 +129,47 @@ CountryList.prototype.getDataFromFormalName = function(str){
 }
 
 
+CountryList.prototype.getData = function(country){
+	var data;
+
+	if(typeof country == "number" || country.match(/[0-9]/)){
+		data = this.getDataFromISONumeric(country);
+	}else{
+		if(country.length == 2){
+			data = this.getDataFromISOAlpha2(country);
+
+		}else if(country.length == 3){
+			data = this.getDataFromISOAlpha3(country);
+
+		}else {
+			data = this.getDataFromName(country);
+		}		
+	}
+
+	return data;
+}
+
+
+CountryList.prototype.getLngLat = function(country){
+	var data = this.getData(country);
+	return [data.longitude, data.latitude];
+}
+
+CountryList.prototype.getISOName = function(country){
+	var data = this.getData(country);
+	return data.ISO31661_name;
+}
+
+CountryList.prototype.getISONumber = function(country){
+	var data = this.getData(country);
+	return Number(data.ISO31661_numeric);
+}
+
+CountryList.prototype.getCapital = function(country){
+	var data = this.getData(country);
+	if(data.capital2 != ""){
+		return [data.capital, data.capital2];
+	}else{
+		return data.capital;
+	}
+}
