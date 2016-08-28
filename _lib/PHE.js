@@ -589,6 +589,18 @@ var getDataRange = function(data, dataName, arrayStart){
 
 
 /*---
+**
+*/
+var random = function(min, max){
+	if(max){
+		return Math.random()*(max-min)+min;		
+	}
+
+	return Math.random()*min;		
+}
+
+
+/*---
 **UTILITY THIS IS NOT LATEST
 */
 function mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray){
@@ -679,27 +691,27 @@ function setFillImage(id, filename, width, height){
 **----------------------------------------------------------------------------------
 */
 
-function getAllCountriesData(){
+var getAllCountriesData = function(){
 	return countryList.data;
 }
 
-function getCountryData(country){
+var getCountryData = function(country){
 	return countryList.getData(country);
 }
 
-function getLngLat(country){
+var getLngLat = function(country){
 	return countryList.getLngLat(country);
 }
 
-function getISOName(country){
+var getISOName = function(country){
 	return countryList.getISOName(country);
 }
 
-function getISONumber(country){
+var getISONumber = function(country){
 	return countryList.getISONumber(country);
 }
 
-function getCapital(country){
+var getCapital = function(country){
 	return countryList.getCapital(country);
 }
 
