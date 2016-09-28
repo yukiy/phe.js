@@ -6,6 +6,8 @@
 
 var PHE = function(){
 	this.scriptFiles = [
+		"../_lib/codemirror/codemirror.js",
+		"../_lib/codemirror/javascript.js",
 		"../_lib/canvg/rgbcolor.js",
 		"../_lib/canvg/StackBlur.js",
 		"../_lib/canvg/canvg.js",
@@ -16,6 +18,10 @@ var PHE = function(){
 		"../_lib/CountryList.js"
 	];
 
+	this.styleFiles = [
+		"../_lib/codemirror/codemirror.css"
+	];
+
 	this.basemap = null;
 	this.graticule = null;
 	this.borders = null;
@@ -24,6 +30,8 @@ var PHE = function(){
 	this.center = [0, 0];
 
 	this.datafolder = "../_data/";
+
+	this.editor = true;
 }
 
 var phe = new PHE();
@@ -278,22 +286,24 @@ var getCapital = function(country){
 // var mouseDown = function(){};
 // var mouseClick = function(){};
 
-
 PHE.prototype.run = function(){
+	var that = this;
 
-	document.body.innerHTML += "<div id='svgArea'></div>";
-	document.body.innerHTML += "<div id='canvasArea'></div>";
+	document.body.innerHTML += "<div id='main'></div>";
+
+	var el = document.getElementById("main");
+	el.innerHTML += "<div id='svgArea'></div>";
+	el.innerHTML += "<div id='canvasArea'></div>";
+	if(this.editor){
+		el.innerHTML += "<div id='editor'></div>";
+	}
 	document.body.innerHTML += "<div id='footer'></div>";
-
 
 	countryList = new CountryList();
 
 	this.createSVGArea();
 	this.createCanvasArea();
 	this.setInteractions();
-
-	this.createExportBtns();
-
 
 	projection = d3.geo.equirectangular()
 	.scale(153)
@@ -308,7 +318,9 @@ PHE.prototype.run = function(){
 		worldJson = world;
 		countryList.loadList("./phe/countries.csv?"+new Date(),function(){
 			countryList.loadList("./phe/countries.csv?"+new Date(),function(){
-				pictureHappinessOnEarth();
+				if(typeof pictureHappinessOnEarth == "function" && !that.editor){
+					pictureHappinessOnEarth();
+				}
 			});
 		});
 	})
@@ -318,6 +330,15 @@ PHE.prototype.run = function(){
 
 	//---What's this? -> http://stackoverflow.com/questions/22448032/d3-what-is-the-self-as-in-d3-selectself-frameelement-styleheight-height
 	d3.select(self.frameElement).style("height", svgH + "px");
+
+
+	if(this.editor){
+		this.createJSEditor();
+	}
+
+	this.createExportBtns();
+
+	this.setStyles();
 
 }
 
@@ -368,8 +389,11 @@ PHE.prototype.setInteractions = function(){
 PHE.prototype.createExportBtns = function(){
 	var that = this;
 
+	d3.select("#footer").append("span")
+	.attr("id", "export");
+
 	//---PNG
-	d3.select("#footer").append("input")
+	d3.select("#export").append("input")
 	.attr("id", "png_btn")
 	.attr("type", "button")
 	.attr("value", "Export as PNG")
@@ -378,7 +402,7 @@ PHE.prototype.createExportBtns = function(){
     })
 
 	//---SVG
-	d3.select("#footer").append("input")
+	d3.select("#export").append("input")
 	.attr("id", "svg_btn")
 	.attr("type", "button")
 	.attr("value", "Export as SVG")
@@ -419,6 +443,67 @@ PHE.prototype.getImageDownloadLinkTag = function(linkText){
 
 	return linkTag;
 }
+
+
+PHE.prototype.createJSEditor = function(){
+	if(!CodeMirror) return; 
+
+	var el = document.getElementById("editor");
+	el.innerHTML += "<textarea id='editor_js' rows=30 cols=50></textarea>";
+	// el = document.getElementById("footer");
+	// el.innerHTML += "<input id='runBtn' type='button' value='run'/>";
+
+	var jsEditor = CodeMirror.fromTextArea(document.getElementById('editor_js'), {
+		mode: "javascript",
+		lineNumbers: true,
+		indentUnit: 4
+	});
+
+	d3.select("#footer").append("input")
+	.attr("id", "run_btn")
+	.attr("type", "button")
+	.attr("value", "Run")
+	.on("click", function(d){
+		jsEditor.save();
+		var val = $('#editor_js').val();
+		eval(val);
+	});
+
+}
+
+PHE.prototype.setStyles = function(){
+
+	$("body").css({
+		position : "relative",
+		textAlign : "center"
+	})
+
+	$("#svg").css({
+		border : "dashed #aaa 1px"
+	});
+
+	$("#footer").css({
+		zIndex : 100,
+		background : "#0068B6",
+		position : "fixed",
+		bottom : "0px",
+		width : "100%",
+		height : "30px"
+	});
+
+	$("#footer input").css({
+		marginRight : "40px"
+	});
+
+	$("#editor").css({
+		border : "solid #aaa 1px",
+		textAlign : "left",
+		width : svgW,
+		margin : "auto",
+		marginBottom : "35px"
+	});
+}
+
 
 /*-------------------------------------------------------------------------------------------------
 **----DRAW FUNCTIONS-------------------------------------------------------------------------------
@@ -1073,6 +1158,11 @@ PHE.prototype.saveImage = function(filename){
 for(var i=0; i<phe.scriptFiles.length; i++){
 	document.write("<script src='"+phe.scriptFiles[i]+"'></script>");
 }
+
+for(var i=0; i<phe.styleFiles.length; i++){
+	document.write("<link rel='stylesheet' type='text/css' href='"+phe.styleFiles[i]+"'/>");
+}
+
 
 window.onload = function(){
 	phe.run();
