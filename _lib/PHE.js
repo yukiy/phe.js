@@ -1,10 +1,32 @@
 /*
 * PHE.js
-* v1.0.2
+* v1.1.0
 * created for Picture Happiness on Earth 2016 at Miraikan, Tokyo
 */
 
-var datafolder = "../_data/";
+var PHE = function(){
+	this.scriptFiles = [
+		"../_lib/canvg/rgbcolor.js",
+		"../_lib/canvg/StackBlur.js",
+		"../_lib/canvg/canvg.js",
+		"../_lib/FileSaver.min.js",
+		"../_lib/canvas-toBlob.js",
+		"../_lib/d3.v3.min.js",
+		"../_lib/topojson.v1.min.js",
+		"../_lib/CountryList.js"
+	];
+
+	this.basemap = null;
+	this.graticule = null;
+	this.borders = null;
+	this.countries = [];
+	this.lines = [];
+	this.center = [0, 0];
+
+	this.datafolder = "../_data/";
+}
+
+var phe = new PHE();
 
 var svgElId = "svgArea";
 var canvasElId = "canvasArea";
@@ -23,12 +45,7 @@ var projection;
 
 var countryList;
 
-var pheBasemap;
-var pheGraticule;
-var pheBorders;
-var pheCountries = [];
-var pheLines = [];
-var pheCenter = [0,0];
+
 
 
 
@@ -55,372 +72,57 @@ var pheCoords = {
 **----------------------------------------------------------------------------------
 */
 
-/*
-https://triple-underscore.github.io/SVG11/painting.html#RenderingProperties
-drawOptionsExample = {
-	strokeWidth : "0.5px",
-	strokeDasharray : "none" | "3 3 1 3 ",
-	strokeDashoffset : 0,
-	strokeLinecap : "round" | "square" | "butt",
-	strokeLinejoin : "miter" | "round" | "bevel",
-	strokeColor : "#000",
-	strokeOpacity : "0.5",
-	fillColor : "#F00",
-	fillOpacity : "0.5",
-	opacity : "1.0",
-	id: "myId"
+function makeOceanColor(color){
+	return phe.makeOceanColor(color);
 }
 
-textOptionsExample = {
-	fontFamily : "",
-	fontStyle : "normal" | "italic" | "oblique",
-	fontSize : "",
-	textAnchor : "start" | "middle" | "end"
-}
-
-
-*/
-
-/*---
-**色見本http://www.netyasun.com/home/color.html
-*/
-
-var makeOceanColor = function(color){
-	svg.append('rect')
-	.attr('width', svgW)
-	.attr('height', svgH)
-	.attr('fill', color)
-}
-
-
-
-/*---
-**
-*/
 function drawBaseMap(o){
-
-	if(!o) o = {};
-	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
-	if(!o.strokeColor) 		o.strokeColor = "#000";
-	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
-	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
-	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
-	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
-	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
-	if(!o.fillColor) 		o.fillColor = "#FFF";
-	if(!o.fillOpacity) 		o.fillOpacity = "1.0";
-
-	var world = worldJson;
-	var land = topojson.feature(world, world.objects.land);
-	pheBasemap = svg.insert("path", ".graticule")
-		.datum(land)
-		.attr("class", "land")
-		.attr("stroke", o.strokeColor)
-		.attr("stroke-width", o.strokeWidth)
-		.attr("stroke-dasharray", o.strokeDasharray)
-		.attr("stroke-dashoffset", o.strokeDashoffset)
-		.attr("stroke-linecap", o.strokeLinecap)
-		.attr("stroke-linejoin", o.strokeLinejoin)
-		.attr("stroke-opacity", o.strokeOpacity)
-		.attr("fill", o.fillColor)
-		.attr("fill-opacity", o.fillOpacity)
-		.attr("d", path);
-
-	return pheBasemap;
+	return phe.drawBaseMap(o);
 }
 
-/*---
-**
-*/
 function updateBaseMap(o){
-	if(o){
-		if(o.strokeColor) 		pheBasemap.attr("stroke", o.strokeColor)
-		if(o.strokeWidth) 		pheBasemap.attr("stroke-width", o.strokeWidth)
-		if(o.strokeDasharray)	pheBasemap.attr("stroke-dasharray", o.strokeDasharray)
-		if(o.strokeDashoffset)	pheBasemap.attr("stroke-dashoffset", o.strokeDashoffset)
-		if(o.strokeLinecap) 	pheBasemap.attr("stroke-linecap", o.strokeLinecap)
-		if(o.strokeLinejoin)	pheBasemap.attr("stroke-linejoin", o.strokeLinejoin)
-		if(o.strokeOpacity)		pheBasemap.attr("stroke-opacity", o.strokeOpacity)
-		if(o.fillColor) 		pheBasemap.attr("fill", o.fillColor)
-		if(o.fillOpacity) 		pheBasemap.attr("fill-opacity", o.fillOpacity)
-	}
-	pheBasemap.attr("d", path);
-
-	return pheBasemap;
+	return phe.updateBaseMap(o);
 }
 
-
-
-/*---
-* void drawCountry(int country-code, object options)
-* countryCode -> ISO 3166-1 country codes : https://en.wikipedia.org/wiki/ISO_3166-1_numeric
-*/
 function drawCountry(countryCode, o){
-
-	if(!o) o = {};
-	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
-	if(!o.strokeColor) 		o.strokeColor = "#000";
-	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
-	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
-	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
-	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
-	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
-	if(!o.fillColor) 		o.fillColor = "#FFF";
-	if(!o.fillOpacity) 		o.fillOpacity = "1.0";
-
-	if(!o.filter){
-		o.filter = "";
-	} else{
-		o.filter = "url(#"+o.filter+")";
-	}
-
-	if(o.fillImageId){
-		o.fillColor = "url(#"+o.fillImageId+")";
-	}
-
-	var world = worldJson;
-	var countries = world.objects.countries;
-	for(var i=0; i<countries.geometries.length; i++){
-		if(countries.geometries[i].id == countryCode){
-			var shapeData = topojson.feature(world, world.objects.countries).features[i];
-
-			//---draw svg
-			var countrySVG = svg.insert("path", ".graticule")
-				.datum(shapeData)
-				.attr("class", "land")
-				.attr("stroke", o.strokeColor)
-				.attr("stroke-width", o.strokeWidth)
-				.attr("stroke-dasharray", o.strokeDasharray)
-				.attr("stroke-dashoffset", o.strokeDashoffset)
-				.attr("stroke-linecap", o.strokeLinecap)
-				.attr("stroke-linejoin", o.strokeLinejoin)
-				.attr("stroke-opacity", o.strokeOpacity)
-				.attr("fill", o.fillColor)
-				.attr("fill-opacity", o.fillOpacity)
-				.attr("filter", o.filter)
-//				.attr("fill", o.fillImageId)
-				.attr("d", path);
-
-
-
-			pheCountries.push({svg: countrySVG, countryCode: countryCode});
-		}
-	}
+	return phe.drawCountry(countryCode, o);
 }
 
 function updateCountry(countryCode){
-	for(var i=0; i<pheCountries.length; i++){
-		if(countryCode === pheCountries[i].countryCode){
-			pheCountries[i].svg.attr("d", path);
-		}
-	}
+	return phe.updateCountry(countryCode);
 }
 
 function updateCountries(){
-	for(var i=0; i<pheCountries.length; i++){
-		pheCountries[i].svg.attr("d", path);
-	}
+	return phe.updateCountries();
 }
 
-
-/*---
-**
-*/
 function drawBorders(o){
-
-	if(!o) o = {};
-	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
-	if(!o.strokeColor) 		o.strokeColor = "#000";
-	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
-	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
-	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
-	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
-	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
-
-	var world = worldJson;
-	var borders = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
-//	pheBorders = svg.append("path")
-	pheBorders = svg.insert("path", ".graticule")
-		.datum(borders)
-		.attr("class", "land")
-		.attr("stroke", o.strokeColor)
-		.attr("stroke-width", o.strokeWidth)
-		.attr("stroke-dasharray", o.strokeDasharray)
-		.attr("stroke-dashoffset", o.strokeDashoffset)
-		.attr("stroke-linecap", o.strokeLinecap)
-		.attr("stroke-linejoin", o.strokeLinejoin)
-		.attr("stroke-opacity", o.strokeOpacity)
-		.attr("fill", "none")
-		.attr("d", path);
-
-	return pheBorders;
+	return phe.drawBorders(o);
 }
 
-
-/*---
-**
-*/
 function updateBorders(o){
-	if(pheBorders){
-		if(o){
-			if(o.strokeColor) 		pheBorders.attr("stroke", o.strokeColor);
-			if(o.strokeWidth) 		pheBorders.attr("stroke-width", o.strokeWidth);
-			if(o.strokeDasharray)	pheBorders.attr("stroke-dasharray", o.strokeDasharray);
-			if(o.strokeDashoffset)	pheBorders.attr("stroke-dashoffset", o.strokeDashoffset);
-			if(o.strokeLinecap) 	pheBorders.attr("stroke-linecap", o.strokeLinecap);
-			if(o.strokeLinejoin)	pheBorders.attr("stroke-linejoin", o.strokeLinejoin);
-			if(o.strokeOpacity)		pheBorders.attr("stroke-opacity", o.strokeOpacity);
-		}
-		pheBorders.attr("d", path);
-
-		return pheBorders;
-	}
+	return phe.updateBorders(o);
 }
 
-
-
-/*---
-* Graticule = 緯度経度線
-* options{strokeWidth:, color;, opacity: }
-*/
 function drawGraticule(o){
-
-	if(!o) o = {};
-	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
-	if(!o.strokeColor) 		o.strokeColor = "#777";
-	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
-	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
-	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
-	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
-	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
-
-	var graticule = d3.geo.graticule();
-
-	pheGraticule = svg.append("path")
-		.datum(graticule)
-		.attr("class", "graticule")
-		.attr("stroke-width", o.strokeWidth)
-		.attr("stroke", o.strokeColor)
-		.attr("stroke-dasharray", o.strokeDasharray)
-		.attr("stroke-dashoffset", o.strokeDashoffset)
-		.attr("stroke-linecap", o.strokeLinecap)
-		.attr("stroke-linejoin", o.strokeLinejoin)
-		.attr("stroke-opacity", o.strokeOpacity)
-		.attr("fill", "none")
-		.attr("d", path);
-
-	return pheGraticule;
+	return phe.drawGraticule(o);
 }
 
-
-/*---
-**
-*/
 function updateGraticule(o){
-	if(pheGraticule){
-		if(o){
-			if(o.strokeColor) 		pheGraticule.attr("stroke", o.strokeColor);
-			if(o.strokeWidth) 		pheGraticule.attr("stroke-width", o.strokeWidth);
-			if(o.strokeDasharray)	pheGraticule.attr("stroke-dasharray", o.strokeDasharray);
-			if(o.strokeDashoffset)	pheGraticule.attr("stroke-dashoffset", o.strokeDashoffset);
-			if(o.strokeLinecap) 	pheGraticule.attr("stroke-linecap", o.strokeLinecap);
-			if(o.strokeLinejoin)	pheGraticule.attr("stroke-linejoin", o.strokeLinejoin);
-			if(o.strokeOpacity)		pheGraticule.attr("stroke-opacity", o.strokeOpacity);
-		}
-		pheGraticule.attr("d", path);
-
-		return pheGraticule;
-	}
+	return phe.updateGraticule(o);
 }
 
-
-/*---
-**
-*/
 function drawText(str, lngLat, o){
-	if(!o) o = {};
-	if(!o.fontSize) 	o.fontSize = "10px";
-	if(!o.strokeWidth) 	o.strokeWidth = "0.5";
-	if(!o.strokeColor) 	o.strokeColor = "#FFF";
-	if(!o.fillColor) 	o.fillColor = "#000";
-	if(!o.opacity) 		o.opacity = "1.0";
-	if(!o.id)			o.id = "";
-
-
-	var position = lngLat2XY(lngLat);
-	var x = position[0];
-	var y = position[1] + (parseInt(o.fontSize)/2);
-
-	svg.append("text")
-		.attr("class", "texts")
-		.attr("id", o.id)
-		.attr("stroke-width", o.strokeWidth)
-		.attr("stroke", o.strokeColor)
-		.attr("fill", o.fillColor)
-		.attr("opacity", o.opacity)
-	    .attr("transform", function(d) { return "translate(" + [x,y] + ")"; })
-		.attr("font-size", o.fontSize)
-		.attr("text-anchor", "middle")
-		.text(str);
-
+	return phe.drawText(str, lngLat, o);
 }
-
 
 function drawLine(lngLatArray, o){
-
-	if(!o) o = {};
-	if(!o.strokeWidth) 		o.strokeWidth = "2.0px";
-	if(!o.strokeColor) 		o.strokeColor = "#F00";
-	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
-	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
-	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
-	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
-	if(!o.strokeOpacity) 	o.strokeOpacity = "1.0";
-
-	var pointData = {
-		"type": "LineString",
-		"coordinates": lngLatArray
-	}
-
-	// var line = svg.selectAll(".line")
-	// 	.data([pointData])
-	// 	.enter()
-	// 	.append("path")
-
-	var line = svg.append("path")
-		.data([pointData])
-//		.datum(pointData)
-		.attr("class", "line")
-		.attr("stroke-width", o.strokeWidth)
-		.attr("stroke", o.strokeColor)
-		.attr("stroke-dasharray", o.strokeDasharray)
-		.attr("stroke-dashoffset", o.strokeDashoffset)
-		.attr("stroke-linecap", o.strokeLinecap)
-		.attr("stroke-linejoin", o.strokeLinejoin)
-		.attr("stroke-opacity", o.strokeOpacity)
-		.attr("fill", "none")
-		.attr("d", path);
-
-	pheLines.push(line);
+	return phe.drawLine(lngLatArray, o);
 }
 
 function updateLines(){
-	for(var i=0; i<pheLines.length; i++){
-		pheLines[i].attr("d", path);
-	}
+	return phe.updateLines();
 }
-
-
-
-/*----------------------------------------------------------------------------------
-**-----DOM UTILITIES--------------------------------------------------------------------
-**----------------------------------------------------------------------------------
-*/
-
-function selectById(elId){
-	return d3.select("#"+elId);
-}
-
 
 /*----------------------------------------------------------------------------------
 **-----GEO UTILITIES--------------------------------------------------------------------
@@ -429,225 +131,89 @@ function selectById(elId){
 
 
 function XY2LngLat(arrayXY){
-	return projection.invert(arrayXY);
+	return phe.XY2LngLat(arrayXY);
 }
 
-
 function lngLat2XY(lngLat){
-	return projection(lngLat);
+	return phe.lngLat2XY(lngLat);
 }
 
 function invertCoord(lngLat){
-	return [ -lngLat[0], -lngLat[1] ];
+	return phe.invertCoord(lngLat);
 }
 
-
 function setCenter(lngLat){
-	pheCenter = lngLat;
-	projection.rotate(invertCoord(lngLat));
+	return phe.setCenter(lngLat);
 }
 
 function getCenter(){
-	return 	pheCenter;
+	return phe.getCenter();
 }
 
 function updateCenter(lngLat){
-	pheCenter = lngLat;
-	projection.rotate(invertCoord(lngLat));
-	updateBaseMap();
-	updateBorders();
-	updateGraticule();
-	updateCountries();
-	updateLines();
+	return phe.updateCenter(lngLat);
 }
 
 
 function rotateMap(yaw, pitch){
-
-	// if(!yaw) yaw = 0;
-	// if(!pitch) pitch = 0;
-	// if(!roll) roll = 0;
-	var curCenter = getCenter();
-	updateCenter([curCenter[0]+yaw, curCenter[1]+pitch]);
-	updateBaseMap();
-	updateBorders();
-	updateGraticule();
-	updateCountries();
-	updateLines();
+	return phe.rotateMap(yaw, pitch);
 }
 
 
 function rotateTo(startLngLat, distLngLat, frame, speed, callback, isExport, exportOptions){
-
-	var num = 0;
-
-	var lngUnit = ( distLngLat[0] - startLngLat[0] ) / frame;
-	var latUnit = ( distLngLat[1] - startLngLat[1] ) / frame;
-
-	var o = {};
-	if (exportOptions) o = exportOptions;
-	if(!o.prefix) o.prefix = "";
-	if(!o.startNum) o.startNum = 0;
-
-	function move(num){
-		if(num < frame){
-
-			rotateMap(lngUnit, latUnit);
-
-			if(isExport){
-				var fileNum = o.startNum + num;
-				phe.saveImage(o.prefix+fileNum);
-			}
-
-			setTimeout(function(){
-				num++;
-				move(num);
-			}, speed);
-
-		}else{
-
-			callback();
-
-		}
-	}
-
-	move(num);
+	return phe.rotateTo(startLngLat, distLngLat, frame, speed, callback, isExport, exportOptions);
 }
+
 
 /*----------------------------------------------------------------------------------
 **-----DATA UTILITIES--------------------------------------------------------------------
 **----------------------------------------------------------------------------------
 */
 
-/*---
-**
-*/
-var rgb = function(r, g, b){
-	r = Math.round(r);
-	g = Math.round(g);
-	b = Math.round(b);
-	return "rgb("+r+","+g+","+b+")"
+function rgb(r, g, b){
+	return phe.rgb(r, g, b);
 }
 
-var rgba = function(r, g, b, a){
-	r = Math.round(r);
-	g = Math.round(g);
-	b = Math.round(b);
-	return "rgba("+r+","+g+","+b+","+a+")"
+function rgba(r, g, b, a){
+	return phe.rgba(r, g, b, a);
 }
 
-var hsl = function(h, s, l){
-	return "hsl("+h+","+s+","+l+")"
+function hsl(h, s, l){
+	return phe.hsl(h, s, l);
 }
 
-
-
-/*---
-**
-*/
-var mapValue = function(val1, min1, max1, min2, max2){
-	var a = (val1 - min1) / (max1 - min1);
-	var val2 = (max2 - min2) * a + min2;
-	return val2;
+function mapValue(val1, min1, max1, min2, max2){
+	return phe.mapValue(val1, min1, max1, min2, max2);
 }
 
-
-/*---
-**
-*/
-var readData = function(filename, callback){
-	d3.csv(datafolder + filename, function(data){
-		callback(data);
-	});
+function readData(filename, callback){
+	return phe.readData(filename, callback);
 }
 
-
-/*---
-**
-*/
-var getDataRange = function(data, dataName, arrayStart){
-
-	if(arrayStart > 0){
-		for(var i=0; i<arrayStart; i++){
-			data.shift()
-		}
-	}
-
-	var minVal = d3.min(data, function(e){
-		if(e[dataName] == "") return undefined;
-		e[dataName] = parseFloat(e[dataName]);
-		return e[dataName];
-	});
-	var maxVal = d3.max(data, function(e){
-		if(e[dataName] == "") return undefined;
-		e[dataName] = parseFloat(e[dataName]);
-		return e[dataName];
-	});
-
-	return {min: minVal, max: maxVal};
+function getDataRange(data, dataName, arrayStart){
+	return phe.getDataRange(data, dataName, arrayStart);
 }
 
-
-/*---
-**
-*/
-var random = function(min, max){
-	if(max){
-		return Math.random()*(max-min)+min;		
-	}
-
-	return Math.random()*min;		
+function random(min, max){
+	return phe.random(min, max);
 }
 
-
-/*---
-**UTILITY THIS IS NOT LATEST
-*/
+//THIS IS NOT LATEST
 function mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray){
-
-	var  addValueFromAnotherList = function(data1, data2, commonkey1, commonkey2, newkeyArray){
-
-		for(var i=0; i<data1.length; i++){
-			for(var j=0; j<data2.length; j++){
-				if( data1[i][commonkey1].toLowerCase() == data2[j][commonkey2].toLowerCase()){
-					for(var n=0; n<newkeyArray.length; n++){
-						data1[i][newkeyArray[n]] = data2[j][newkeyArray[n]];
-					}
-				}
-			}
-		}
-		return data1;
-	}
-
-
-	var json2csv = function(json) {
-	    var header = Object.keys(json[0]).join(',') + "\n";
-
-	    var body = json.map(function(d){
-	        return Object.keys(d).map(function(key) {
-	            return d[key];
-	        }).join(',');
-	    }).join("\n");
-
-	    return header + body;
-	}
-
-	var data1, data2;
-
-	d3.csv(datafolder + filename1, function(data){
-		data1 = data;
-		console.log(data1);
-		d3.csv(datafolder + filename2, function(data){
-			data2 = data;
-			var json = addValueFromAnotherList(data1, data2, commonkey1, commonkey2, newkeyArray);
-			var str = json2csv(json);
-			document.write('<pre>'+str+'</pre>');
-			return str;
-		});
-	});
-
-
+	return phe.mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray)
 }
+
+
+/*----------------------------------------------------------------------------------
+**-----DOM UTILITIES--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+
+function selectById(elId){
+	return phe.selectById(elId);
+}
+
+
 
 
 /*----------------------------------------------------------------------------------
@@ -655,33 +221,20 @@ function mergeData(filename1, filename2, commonkey1, commonkey2, newkeyArray){
 **----------------------------------------------------------------------------------
 */
 function addFilter(){
-	var defs = svg.append("defs");
-
-	var blurFilter = defs.append("filter")
-		.attr("id", "blur")
-		.attr("x", "0")
-		.attr("y", "0")
-
-	blurFilter.append("feGaussianBlur")
-		.attr("in", "SourceGraphic")
-		.attr("stdDeviation", "3");
+	return phe.addFilter();
 }
 
 function setFillImage(id, filename, width, height){
-	var defs = svg.append("svg:defs");
+	return phe.setFillImage(id, filename, width, height)
+}
 
-	var pattern = defs.append("pattern")
-		.attr("id", id)
-		.attr("width", width)
-		.attr("height", height)
-		.attr("patternUnits", "userSpaceOnUse");
 
-	pattern.append("image")
-		.attr("xlink:href", filename)
-		.attr("width", width)
-		.attr("height", height)
-		.attr("x", "0")
-		.attr("y", "0");
+/*----------------------------------------------------------------------------------
+**-----FILE UTILITIES--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+function saveImage(filename){
+	return phe.saveImage(filename);
 }
 
 
@@ -726,21 +279,6 @@ var getCapital = function(country){
 // var mouseClick = function(){};
 
 
-var PHE = function(){
-	this.scriptFiles = [
-		"../_lib/canvg/rgbcolor.js",
-		"../_lib/canvg/StackBlur.js",
-		"../_lib/canvg/canvg.js",
-		"../_lib/FileSaver.min.js",
-		"../_lib/canvas-toBlob.js",
-		"../_lib/d3.v3.min.js",
-		"../_lib/topojson.v1.min.js",
-		"../_lib/CountryList.js"
-	]
-}
-
-var phe = new PHE();
-
 PHE.prototype.run = function(){
 
 	document.body.innerHTML += "<div id='svgArea'></div>";
@@ -764,8 +302,8 @@ PHE.prototype.run = function(){
 
 	path = d3.geo.path().projection(projection);
 
-	d3.json(datafolder+"./phe/world-110m.json", function(error, world) {
-//	d3.json(datafolder+"./phe/world-50m.json", function(error, world) {
+	d3.json(this.datafolder+"./phe/world-110m.json", function(error, world) {
+//	d3.json(this.datafolder+"./phe/world-50m.json", function(error, world) {
 		if (error) throw error;
 		worldJson = world;
 		countryList.loadList("./phe/countries.csv?"+new Date(),function(){
@@ -882,7 +420,638 @@ PHE.prototype.getImageDownloadLinkTag = function(linkText){
 	return linkTag;
 }
 
+/*-------------------------------------------------------------------------------------------------
+**----DRAW FUNCTIONS-------------------------------------------------------------------------------
+**-------------------------------------------------------------------------------------------------
+*/
+/*
+https://triple-underscore.github.io/SVG11/painting.html#RenderingProperties
+drawOptionsExample = {
+	strokeWidth : "0.5px",
+	strokeDasharray : "none" | "3 3 1 3 ",
+	strokeDashoffset : 0,
+	strokeLinecap : "round" | "square" | "butt",
+	strokeLinejoin : "miter" | "round" | "bevel",
+	strokeColor : "#000",
+	strokeOpacity : "0.5",
+	fillColor : "#F00",
+	fillOpacity : "0.5",
+	opacity : "1.0",
+	id: "myId"
+}
 
+textOptionsExample = {
+	fontFamily : "",
+	fontStyle : "normal" | "italic" | "oblique",
+	fontSize : "",
+	textAnchor : "start" | "middle" | "end"
+}
+
+*/
+
+PHE.prototype.makeOceanColor = function(color){
+	svg.append('rect')
+	.attr('width', svgW)
+	.attr('height', svgH)
+	.attr('fill', color);
+}
+
+
+PHE.prototype.drawBaseMap = function(o){
+	if(!o) o = {};
+	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
+	if(!o.strokeColor) 		o.strokeColor = "#000";
+	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
+	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
+	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
+	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
+	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
+	if(!o.fillColor) 		o.fillColor = "#FFF";
+	if(!o.fillOpacity) 		o.fillOpacity = "1.0";
+
+	var world = worldJson;
+	var land = topojson.feature(world, world.objects.land);
+	this.basemap = svg.insert("path", ".graticule")
+		.datum(land)
+		.attr("class", "land")
+		.attr("stroke", o.strokeColor)
+		.attr("stroke-width", o.strokeWidth)
+		.attr("stroke-dasharray", o.strokeDasharray)
+		.attr("stroke-dashoffset", o.strokeDashoffset)
+		.attr("stroke-linecap", o.strokeLinecap)
+		.attr("stroke-linejoin", o.strokeLinejoin)
+		.attr("stroke-opacity", o.strokeOpacity)
+		.attr("fill", o.fillColor)
+		.attr("fill-opacity", o.fillOpacity)
+		.attr("d", path);
+
+	return this.basemap;
+}
+
+
+PHE.prototype.updateBaseMap = function(o){
+	if(o){
+		if(o.strokeColor) 		this.basemap.attr("stroke", o.strokeColor)
+		if(o.strokeWidth) 		this.basemap.attr("stroke-width", o.strokeWidth)
+		if(o.strokeDasharray)	this.basemap.attr("stroke-dasharray", o.strokeDasharray)
+		if(o.strokeDashoffset)	this.basemap.attr("stroke-dashoffset", o.strokeDashoffset)
+		if(o.strokeLinecap) 	this.basemap.attr("stroke-linecap", o.strokeLinecap)
+		if(o.strokeLinejoin)	this.basemap.attr("stroke-linejoin", o.strokeLinejoin)
+		if(o.strokeOpacity)		this.basemap.attr("stroke-opacity", o.strokeOpacity)
+		if(o.fillColor) 		this.basemap.attr("fill", o.fillColor)
+		if(o.fillOpacity) 		this.basemap.attr("fill-opacity", o.fillOpacity)
+	}
+	this.basemap.attr("d", path);
+
+	return this.basemap;
+}
+
+
+/*---
+* void drawCountry(int country-code, object options)
+* countryCode -> ISO 3166-1 country codes : https://en.wikipedia.org/wiki/ISO_3166-1_numeric
+*/
+PHE.prototype.drawCountry = function(countryCode, o){
+
+	if(!o) o = {};
+	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
+	if(!o.strokeColor) 		o.strokeColor = "#000";
+	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
+	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
+	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
+	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
+	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
+	if(!o.fillColor) 		o.fillColor = "#FFF";
+	if(!o.fillOpacity) 		o.fillOpacity = "1.0";
+
+	if(!o.filter){
+		o.filter = "";
+	} else{
+		o.filter = "url(#"+o.filter+")";
+	}
+
+	if(o.fillImageId){
+		o.fillColor = "url(#"+o.fillImageId+")";
+	}
+
+	var world = worldJson;
+	var countries = world.objects.countries;
+	for(var i=0; i<countries.geometries.length; i++){
+		if(countries.geometries[i].id == countryCode){
+			var shapeData = topojson.feature(world, world.objects.countries).features[i];
+
+			//---draw svg
+			var countrySVG = svg.insert("path", ".graticule")
+				.datum(shapeData)
+				.attr("class", "land")
+				.attr("stroke", o.strokeColor)
+				.attr("stroke-width", o.strokeWidth)
+				.attr("stroke-dasharray", o.strokeDasharray)
+				.attr("stroke-dashoffset", o.strokeDashoffset)
+				.attr("stroke-linecap", o.strokeLinecap)
+				.attr("stroke-linejoin", o.strokeLinejoin)
+				.attr("stroke-opacity", o.strokeOpacity)
+				.attr("fill", o.fillColor)
+				.attr("fill-opacity", o.fillOpacity)
+				.attr("filter", o.filter)
+//				.attr("fill", o.fillImageId)
+				.attr("d", path);
+
+
+
+			this.countries.push({svg: countrySVG, countryCode: countryCode});
+		}
+	}
+}
+
+PHE.prototype.updateCountry = function(countryCode){
+	for(var i=0; i<this.countries.length; i++){
+		if(countryCode === this.countries[i].countryCode){
+			this.countries[i].svg.attr("d", path);
+		}
+	}
+}
+
+PHE.prototype.updateCountries = function(){
+	for(var i=0; i<this.countries.length; i++){
+		this.countries[i].svg.attr("d", path);
+	}
+}
+
+
+/*---
+**
+*/
+PHE.prototype.drawBorders = function(o){
+
+	if(!o) o = {};
+	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
+	if(!o.strokeColor) 		o.strokeColor = "#000";
+	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
+	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
+	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
+	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
+	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
+
+	var world = worldJson;
+	var borders = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
+//	this.borders = svg.append("path")
+	this.borders = svg.insert("path", ".graticule")
+		.datum(borders)
+		.attr("class", "land")
+		.attr("stroke", o.strokeColor)
+		.attr("stroke-width", o.strokeWidth)
+		.attr("stroke-dasharray", o.strokeDasharray)
+		.attr("stroke-dashoffset", o.strokeDashoffset)
+		.attr("stroke-linecap", o.strokeLinecap)
+		.attr("stroke-linejoin", o.strokeLinejoin)
+		.attr("stroke-opacity", o.strokeOpacity)
+		.attr("fill", "none")
+		.attr("d", path);
+
+	return this.borders;
+}
+
+
+/*---
+**
+*/
+PHE.prototype.updateBorders = function(o){
+	if(this.borders){
+		if(o){
+			if(o.strokeColor) 		this.borders.attr("stroke", o.strokeColor);
+			if(o.strokeWidth) 		this.borders.attr("stroke-width", o.strokeWidth);
+			if(o.strokeDasharray)	this.borders.attr("stroke-dasharray", o.strokeDasharray);
+			if(o.strokeDashoffset)	this.borders.attr("stroke-dashoffset", o.strokeDashoffset);
+			if(o.strokeLinecap) 	this.borders.attr("stroke-linecap", o.strokeLinecap);
+			if(o.strokeLinejoin)	this.borders.attr("stroke-linejoin", o.strokeLinejoin);
+			if(o.strokeOpacity)		this.borders.attr("stroke-opacity", o.strokeOpacity);
+		}
+		this.borders.attr("d", path);
+
+		return this.borders;
+	}
+}
+
+
+/*---
+* Graticule = 緯度経度線
+* options{strokeWidth:, color;, opacity: }
+*/
+PHE.prototype.drawGraticule = function(o){
+	if(!o) o = {};
+	if(!o.strokeWidth) 		o.strokeWidth = "0.5px";
+	if(!o.strokeColor) 		o.strokeColor = "#777";
+	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
+	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
+	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
+	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
+	if(!o.strokeOpacity) 	o.strokeOpacity = "0.2";
+
+	var graticule = d3.geo.graticule();
+
+	this.graticule = svg.append("path")
+		.datum(graticule)
+		.attr("class", "graticule")
+		.attr("stroke-width", o.strokeWidth)
+		.attr("stroke", o.strokeColor)
+		.attr("stroke-dasharray", o.strokeDasharray)
+		.attr("stroke-dashoffset", o.strokeDashoffset)
+		.attr("stroke-linecap", o.strokeLinecap)
+		.attr("stroke-linejoin", o.strokeLinejoin)
+		.attr("stroke-opacity", o.strokeOpacity)
+		.attr("fill", "none")
+		.attr("d", path);
+
+	return this.graticule;
+}
+
+
+/*---
+**
+*/
+PHE.prototype.updateGraticule = function(o){
+	if(this.graticule){
+		if(o){
+			if(o.strokeColor) 		this.graticule.attr("stroke", o.strokeColor);
+			if(o.strokeWidth) 		this.graticule.attr("stroke-width", o.strokeWidth);
+			if(o.strokeDasharray)	this.graticule.attr("stroke-dasharray", o.strokeDasharray);
+			if(o.strokeDashoffset)	this.graticule.attr("stroke-dashoffset", o.strokeDashoffset);
+			if(o.strokeLinecap) 	this.graticule.attr("stroke-linecap", o.strokeLinecap);
+			if(o.strokeLinejoin)	this.graticule.attr("stroke-linejoin", o.strokeLinejoin);
+			if(o.strokeOpacity)		this.graticule.attr("stroke-opacity", o.strokeOpacity);
+		}
+		this.graticule.attr("d", path);
+
+		return this.graticule;
+	}
+}
+
+
+/*---
+**
+*/
+PHE.prototype.drawText = function(str, lngLat, o){
+	if(!o) o = {};
+	if(!o.fontSize) 	o.fontSize = "10px";
+	if(!o.strokeWidth) 	o.strokeWidth = "0.5";
+	if(!o.strokeColor) 	o.strokeColor = "#FFF";
+	if(!o.fillColor) 	o.fillColor = "#000";
+	if(!o.opacity) 		o.opacity = "1.0";
+	if(!o.id)			o.id = "";
+
+
+	var position = lngLat2XY(lngLat);
+	var x = position[0];
+	var y = position[1] + (parseInt(o.fontSize)/2);
+
+	svg.append("text")
+		.attr("class", "texts")
+		.attr("id", o.id)
+		.attr("stroke-width", o.strokeWidth)
+		.attr("stroke", o.strokeColor)
+		.attr("fill", o.fillColor)
+		.attr("opacity", o.opacity)
+	    .attr("transform", function(d) { return "translate(" + [x,y] + ")"; })
+		.attr("font-size", o.fontSize)
+		.attr("text-anchor", "middle")
+		.text(str);
+
+}
+
+
+/*---
+**
+*/
+PHE.prototype.drawLine = function(lngLatArray, o){
+
+	if(!o) o = {};
+	if(!o.strokeWidth) 		o.strokeWidth = "2.0px";
+	if(!o.strokeColor) 		o.strokeColor = "#F00";
+	if(!o.strokeDasharray) 	o.strokeDasharray = "none";
+	if(!o.strokeDashoffset) o.strokeDashoffset = 0;
+	if(!o.strokeLinecap) 	o.strokeLinecap = "round";
+	if(!o.strokeLinejoin) 	o.strokeLinejoin = "round";
+	if(!o.strokeOpacity) 	o.strokeOpacity = "1.0";
+
+	var pointData = {
+		"type": "LineString",
+		"coordinates": lngLatArray
+	}
+
+	// var line = svg.selectAll(".line")
+	// 	.data([pointData])
+	// 	.enter()
+	// 	.append("path")
+
+	var line = svg.append("path")
+		.data([pointData])
+//		.datum(pointData)
+		.attr("class", "line")
+		.attr("stroke-width", o.strokeWidth)
+		.attr("stroke", o.strokeColor)
+		.attr("stroke-dasharray", o.strokeDasharray)
+		.attr("stroke-dashoffset", o.strokeDashoffset)
+		.attr("stroke-linecap", o.strokeLinecap)
+		.attr("stroke-linejoin", o.strokeLinejoin)
+		.attr("stroke-opacity", o.strokeOpacity)
+		.attr("fill", "none")
+		.attr("d", path);
+
+	this.lines.push(line);
+}
+
+PHE.prototype.updateLines = function(){
+	for(var i=0; i<this.lines.length; i++){
+		this.lines[i].attr("d", path);
+	}
+}
+
+
+/*-------------------------------------------------------------------------------------------------
+**----GEO UTILITIES--------------------------------------------------------------------------------
+**-------------------------------------------------------------------------------------------------
+*/
+
+
+PHE.prototype.XY2LngLat = function(arrayXY){
+	return projection.invert(arrayXY);
+}
+
+
+PHE.prototype.lngLat2XY = function(lngLat){
+	return projection(lngLat);
+}
+
+PHE.prototype.invertCoord = function(lngLat){
+	return [ -lngLat[0], -lngLat[1] ];
+}
+
+
+PHE.prototype.setCenter = function(lngLat){
+	this.center = lngLat;
+	projection.rotate(invertCoord(lngLat));
+}
+
+PHE.prototype.getCenter = function(){
+	return 	this.center;
+}
+
+PHE.prototype.updateCenter = function(lngLat){
+	this.center = lngLat;
+	projection.rotate(invertCoord(lngLat));
+	updateBaseMap();
+	updateBorders();
+	updateGraticule();
+	updateCountries();
+	updateLines();
+}
+
+
+PHE.prototype.rotateMap = function(yaw, pitch){
+
+	// if(!yaw) yaw = 0;
+	// if(!pitch) pitch = 0;
+	// if(!roll) roll = 0;
+	var curCenter = getCenter();
+	updateCenter([curCenter[0]+yaw, curCenter[1]+pitch]);
+	updateBaseMap();
+	updateBorders();
+	updateGraticule();
+	updateCountries();
+	updateLines();
+}
+
+
+PHE.prototype.rotateTo = function(startLngLat, distLngLat, frame, speed, callback, isExport, exportOptions){
+
+	var num = 0;
+
+	var lngUnit = ( distLngLat[0] - startLngLat[0] ) / frame;
+	var latUnit = ( distLngLat[1] - startLngLat[1] ) / frame;
+
+	var o = {};
+	if (exportOptions) o = exportOptions;
+	if(!o.prefix) o.prefix = "";
+	if(!o.startNum) o.startNum = 0;
+
+	function move(num){
+		if(num < frame){
+
+			rotateMap(lngUnit, latUnit);
+
+			if(isExport){
+				var fileNum = o.startNum + num;
+				phe.saveImage(o.prefix+fileNum);
+			}
+
+			setTimeout(function(){
+				num++;
+				move(num);
+			}, speed);
+
+		}else{
+
+			callback();
+
+		}
+	}
+
+	move(num);
+}
+
+
+
+/*---------------------------------------------------------------------------------------
+**-----DATA UTILITIES--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+
+/*---
+**
+*/
+PHE.prototype.rgb = function(r, g, b){
+	r = Math.round(r);
+	g = Math.round(g);
+	b = Math.round(b);
+	return "rgb("+r+","+g+","+b+")"
+}
+
+PHE.prototype.rgba = function(r, g, b, a){
+	r = Math.round(r);
+	g = Math.round(g);
+	b = Math.round(b);
+	return "rgba("+r+","+g+","+b+","+a+")"
+}
+
+PHE.prototype.hsl = function(h, s, l){
+	return "hsl("+h+","+s+","+l+")"
+}
+
+
+
+/*---
+**
+*/
+PHE.prototype.mapValue = function(val1, min1, max1, min2, max2){
+	var a = (val1 - min1) / (max1 - min1);
+	var val2 = (max2 - min2) * a + min2;
+	return val2;
+}
+
+
+/*---
+**
+*/
+PHE.prototype.readData = function(filename, callback){
+	d3.csv(this.datafolder + filename, function(data){
+		callback(data);
+	});
+}
+
+
+/*---
+**
+*/
+PHE.prototype.getDataRange = function(data, dataName, arrayStart){
+
+	if(arrayStart > 0){
+		for(var i=0; i<arrayStart; i++){
+			data.shift()
+		}
+	}
+
+	var minVal = d3.min(data, function(e){
+		if(e[dataName] == "") return undefined;
+		e[dataName] = parseFloat(e[dataName]);
+		return e[dataName];
+	});
+	var maxVal = d3.max(data, function(e){
+		if(e[dataName] == "") return undefined;
+		e[dataName] = parseFloat(e[dataName]);
+		return e[dataName];
+	});
+
+	return {min: minVal, max: maxVal};
+}
+
+
+/*---
+**
+*/
+PHE.prototype.random = function(min, max){
+	if(max){
+		return Math.random()*(max-min)+min;		
+	}
+
+	return Math.random()*min;		
+}
+
+
+
+/*---
+**UTILITY THIS IS NOT LATEST
+*/
+PHE.prototype.mergeData = function(filename1, filename2, commonkey1, commonkey2, newkeyArray){
+
+	var  addValueFromAnotherList = function(data1, data2, commonkey1, commonkey2, newkeyArray){
+
+		for(var i=0; i<data1.length; i++){
+			for(var j=0; j<data2.length; j++){
+				if( data1[i][commonkey1].toLowerCase() == data2[j][commonkey2].toLowerCase()){
+					for(var n=0; n<newkeyArray.length; n++){
+						data1[i][newkeyArray[n]] = data2[j][newkeyArray[n]];
+					}
+				}
+			}
+		}
+		return data1;
+	}
+
+
+	var json2csv = function(json) {
+	    var header = Object.keys(json[0]).join(',') + "\n";
+
+	    var body = json.map(function(d){
+	        return Object.keys(d).map(function(key) {
+	            return d[key];
+	        }).join(',');
+	    }).join("\n");
+
+	    return header + body;
+	}
+
+	var data1, data2;
+
+	d3.csv(this.datafolder + filename1, function(data){
+		data1 = data;
+		console.log(data1);
+		d3.csv(this.datafolder + filename2, function(data){
+			data2 = data;
+			var json = addValueFromAnotherList(data1, data2, commonkey1, commonkey2, newkeyArray);
+			var str = json2csv(json);
+			document.write('<pre>'+str+'</pre>');
+			return str;
+		});
+	});
+
+
+}
+
+
+/*----------------------------------------------------------------------------------
+**-----SVG FILTERS (EXPERIMENTAL)--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+PHE.prototype.addFilter = function(){
+	var defs = svg.append("defs");
+
+	var blurFilter = defs.append("filter")
+		.attr("id", "blur")
+		.attr("x", "0")
+		.attr("y", "0")
+
+	blurFilter.append("feGaussianBlur")
+		.attr("in", "SourceGraphic")
+		.attr("stdDeviation", "3");
+}
+
+PHE.prototype.setFillImage = function(id, filename, width, height){
+	var defs = svg.append("svg:defs");
+
+	var pattern = defs.append("pattern")
+		.attr("id", id)
+		.attr("width", width)
+		.attr("height", height)
+		.attr("patternUnits", "userSpaceOnUse");
+
+	pattern.append("image")
+		.attr("xlink:href", filename)
+		.attr("width", width)
+		.attr("height", height)
+		.attr("x", "0")
+		.attr("y", "0");
+}
+
+
+/*----------------------------------------------------------------------------------
+**-----DOM UTILITIES--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+
+PHE.prototype.selectById = function(elId){
+	return d3.select("#"+elId);
+}
+
+
+/*----------------------------------------------------------------------------------
+**-----FILE UTILITIES--------------------------------------------------------------------
+**----------------------------------------------------------------------------------
+*/
+
+/*---
+**
+*/
 PHE.prototype.saveImage = function(filename){
 	if(!filename) filename = Date.now();
 	//---get SVG as text

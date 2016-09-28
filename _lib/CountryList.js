@@ -10,14 +10,14 @@ var CountryList = function(){
 };
 
 CountryList.prototype.loadList = function(filename, callback){
-	d3.csv(datafolder+filename, function(data){
+	d3.csv(phe.datafolder+filename, function(data){
 		countryList.data = data;
 		callback();
 	});
 }
 
 CountryList.prototype.loadLatlon = function(filename, callback){
-	d3.csv(datafolder+filename, function(data){
+	d3.csv(phe.datafolder+filename, function(data){
 		countryList.latlon = data;
 		callback();
 	});
