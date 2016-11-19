@@ -4,6 +4,8 @@
 * created for Picture Happiness on Earth 2016 at Miraikan, Tokyo
 */
 
+//TODO: countries like somaliland has "-99" as country numeric
+
 var PHE = function(){
 	this.scriptFiles = [
 		"../_lib/codemirror/codemirror.js",
@@ -31,10 +33,8 @@ var PHE = function(){
 
 	this.datafolder = "../_data/";
 
-	this.editor = true;
+	this.editor = editorMode;
 }
-
-var phe = new PHE();
 
 var svgElId = "svgArea";
 var canvasElId = "canvasArea";
@@ -42,6 +42,7 @@ var svgW = 960;
 var svgH = 480;
 var outputW = 4096;
 var outputH = 2048;
+var editorMode = false;
 
 var worldJson;
 var mouseX, mouseY;
@@ -53,7 +54,10 @@ var projection;
 
 var countryList;
 
+var runFuncString = "run();"
+var runFunc = function(){ eval(runFuncString); }; 
 
+var phe = new PHE();
 
 
 
@@ -289,6 +293,8 @@ var getCapital = function(country){
 PHE.prototype.run = function(){
 	var that = this;
 
+	if(window.location.search.indexOf("editor") > -1) that.editor = true;
+
 	document.body.innerHTML += "<div id='main'></div>";
 
 	var el = document.getElementById("main");
@@ -320,6 +326,12 @@ PHE.prototype.run = function(){
 			countryList.loadList("./phe/countries.csv?"+new Date(),function(){
 				if(typeof pictureHappinessOnEarth == "function" && !that.editor){
 					pictureHappinessOnEarth();
+				}else if(!that.editor){
+					runFunc();
+				}else if(that.editor){
+					var val = $('#editor_js').val();
+					val += runFuncString;
+					eval(val);
 				}
 			});
 		});
@@ -446,29 +458,39 @@ PHE.prototype.getImageDownloadLinkTag = function(linkText){
 
 
 PHE.prototype.createJSEditor = function(){
-	if(!CodeMirror) return; 
+	if(!CodeMirror) return;
+
+	var that = this;
 
 	var el = document.getElementById("editor");
 	el.innerHTML += "<textarea id='editor_js' rows=30 cols=50></textarea>";
 	// el = document.getElementById("footer");
 	// el.innerHTML += "<input id='runBtn' type='button' value='run'/>";
 
-	var jsEditor = CodeMirror.fromTextArea(document.getElementById('editor_js'), {
-		mode: "javascript",
-		lineNumbers: true,
-		indentUnit: 4
-	});
+	$.get("./js/main.js", function(txt){
 
-	d3.select("#footer").append("input")
-	.attr("id", "run_btn")
-	.attr("type", "button")
-	.attr("value", "Run")
-	.on("click", function(d){
-		jsEditor.save();
-		var val = $('#editor_js').val();
-		eval(val);
-	});
+		d3.select("#editor_js").html(txt);
 
+		var jsEditor = CodeMirror.fromTextArea(document.getElementById('editor_js'), {
+			mode: "javascript",
+			lineNumbers: true,
+			indentUnit: 4,
+			value : "hihihihi"
+		});
+
+		d3.select("#footer").append("input")
+		.attr("id", "run_btn")
+		.attr("type", "button")
+		.attr("value", "Run")
+		.on("click", function(d){
+			jsEditor.save();
+			var val = $('#editor_js').val();
+			$("#svg").empty();
+			$("#canvas").empty();
+			val += runFuncString;
+			eval(val);
+		});
+	})
 }
 
 PHE.prototype.setStyles = function(){
@@ -476,6 +498,10 @@ PHE.prototype.setStyles = function(){
 	$("body").css({
 		position : "relative",
 		textAlign : "center"
+	})
+
+	$("canvasArea").css({
+		display : "none"
 	})
 
 	$("#svg").css({
@@ -874,6 +900,8 @@ PHE.prototype.invertCoord = function(lngLat){
 
 
 PHE.prototype.setCenter = function(lngLat){
+	lngLat[0] = Number(lngLat[0]);
+	lngLat[1] = Number(lngLat[1]);
 	this.center = lngLat;
 	projection.rotate(invertCoord(lngLat));
 }
@@ -882,35 +910,41 @@ PHE.prototype.getCenter = function(){
 	return 	this.center;
 }
 
+PHE.prototype.update = function(){
+	this.updateBaseMap();
+	this.updateBorders();
+	this.updateGraticule();
+	this.updateCountries();
+	this.updateLines();
+}
+
 PHE.prototype.updateCenter = function(lngLat){
+	lngLat[0] = Number(lngLat[0]);
+	lngLat[1] = Number(lngLat[1]);
 	this.center = lngLat;
 	projection.rotate(invertCoord(lngLat));
-	updateBaseMap();
-	updateBorders();
-	updateGraticule();
-	updateCountries();
-	updateLines();
+	this.update();
 }
 
 
 PHE.prototype.rotateMap = function(yaw, pitch){
-
+	yaw = Number(yaw);
+	pitch = Number(pitch);
 	// if(!yaw) yaw = 0;
 	// if(!pitch) pitch = 0;
 	// if(!roll) roll = 0;
 	var curCenter = getCenter();
-	updateCenter([curCenter[0]+yaw, curCenter[1]+pitch]);
-	updateBaseMap();
-	updateBorders();
-	updateGraticule();
-	updateCountries();
-	updateLines();
+	this.updateCenter([curCenter[0]+yaw, curCenter[1]+pitch]);
+	this.update();
 }
 
 
-PHE.prototype.rotateTo = function(startLngLat, distLngLat, frame, speed, callback, isExport, exportOptions){
+PHE.prototype.rotateTo = function(startLngLat, distLngLat, _frame, _speed, callback, isExport, exportOptions){
 
 	var num = 0;
+
+	var frame = (_frame | 60);
+	var speed = (_speed | 30);
 
 	var lngUnit = ( distLngLat[0] - startLngLat[0] ) / frame;
 	var latUnit = ( distLngLat[1] - startLngLat[1] ) / frame;
@@ -936,9 +970,7 @@ PHE.prototype.rotateTo = function(startLngLat, distLngLat, frame, speed, callbac
 			}, speed);
 
 		}else{
-
-			callback();
-
+			if(callback) callback();
 		}
 	}
 

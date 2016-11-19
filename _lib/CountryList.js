@@ -152,7 +152,7 @@ CountryList.prototype.getData = function(country){
 
 CountryList.prototype.getLngLat = function(country){
 	var data = this.getData(country);
-	return [data.longitude, data.latitude];
+	return [Number(data.longitude), Number(data.latitude)];
 }
 
 CountryList.prototype.getISOName = function(country){
